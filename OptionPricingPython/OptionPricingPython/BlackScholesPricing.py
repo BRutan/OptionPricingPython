@@ -46,7 +46,6 @@ class BlackScholes(object):
             self.__reqArgs[arg] = False
         
         BlackScholes.__ValidateAndSetConstructor(self, args)
-    
     ###################################
     # Properties:
     ###################################
@@ -123,7 +122,6 @@ class BlackScholes(object):
         """
         * Return Gamma of option (second order derivative wrt S_0).
         """
-        q = self.__divRate
         s_0 = self.__s_0
         T = self.__expiry
         d_1 = self.D_1
@@ -194,6 +192,22 @@ class BlackScholes(object):
             elif isinstance(val, float):
                 args.append(arg + ":{0:.2f}".format(val))
         return ','.join(args)
+    @property
+    def Greeks(self):
+        """
+        * Return dictionary containing all greeks.
+        """
+        return {'Delta:' : self.Delta, 'Gamma:': self.Gamma, 'Rho:' : self.Rho, 'Vega:': self.Vega, 'Theta:' : self.Theta}
+    @property
+    def AttributeString(self):
+        greeks = self.Greeks
+        strs = [''.join(['European {', self.ParamsString, '}'])]
+        for key in greeks.keys():
+            strs.append(''.join([key, ':', str(greeks[key])]))
+        strs.append(''.join(['ExpectedReturn:', str(self.ExpectedReturn())]))
+        strs.append(''.join(['Volatility:', str(self.OptionVol)]))
+
+        return '\n'.join(strs)
     ###################################
     # Setters:
     ###################################
@@ -257,20 +271,32 @@ class BlackScholes(object):
     ###################################    
     def InstantaneousChg(self, mu):
         """
-        * Compute instantaneous change in price of option.
+        * Compute instantaneous change in price of option, given risk free rate (mu).
+        Inputs:
+        * mu: Expecting numeric value, or None. If not specified, then uses current
+        risk-free rate.
         """
+        if not mu:
+            mu = self.RiskFree
         if not isinstance(mu, int) and not isinstance(mu, float):
             raise Exception("mu must be numeric.")
-        sigsq = self.__sigma * self.__sigma
+        r_orig = self.RiskFree
+        sig = self.__sigma 
         s = self.__s_0
-        ssq = s * s
-        return .5 * sigsq * ssq * self.Gamma + mu * s * self.Delta + self.Theta
+        self.RiskFree = mu
+        chg = .5 * (( sig * s )** 2) * self.Gamma + mu * s * self.Delta + self.Theta
+        # Reset the risk-free rate to original value:
+        self.RiskFree = r_orig
+        return chg
         
-    def ExpectedReturn(self, mu):
+    def ExpectedReturn(self, mu = None):
         """
-        * Compute expected return of option.
+        * Compute expected return of option, given risk free rate (mu).
+        Inputs:
+        * mu: Expecting numeric value, or None. If not specified, then uses current
+        risk-free rate.
         """
-        if not isinstance(mu, int) and not isinstance(mu, float):
+        if mu and not isinstance(mu, int) and not isinstance(mu, float):
             raise Exception("mu must be numeric.")
             
         return self.InstantaneousChg(mu) / self.Price
@@ -382,6 +408,12 @@ class BlackScholes(object):
 
         return plotObj
 
+    def PrintAttributes(self):
+        """
+        * Print all option attributes (price info, greeks, etc) to stdout.
+        """
+        print(self.AttributeString)
+    
     ###################################
     # Static Helpers:
     ###################################
