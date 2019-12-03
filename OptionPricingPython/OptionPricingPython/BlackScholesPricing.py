@@ -195,7 +195,8 @@ class BlackScholes(object):
     @property
     def Greeks(self):
         """
-        * Return dictionary containing all greeks.
+        * Return dictionary containing all greeks given current 
+        parameters.
         """
         return {'Delta:' : self.Delta, 'Gamma:': self.Gamma, 'Rho:' : self.Rho, 'Vega:': self.Vega, 'Theta:' : self.Theta}
     @property
