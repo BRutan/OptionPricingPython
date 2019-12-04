@@ -306,10 +306,10 @@ class BlackScholes(object):
         """
         * Plot one relationship of 
         y = [ Price, Delta, Gamma, Vega, Rho, Theta, ExpectedReturn, OptionVolatility] (one, case insensitive)
-        vs x = [ s, r, q, t, k, sigma ] (>= 1, case insensitive).
+        vs x = [ s, r, q, t, k, sigma ] (max of 3, case insensitive).
         Inputs:
         * yArg: Expecting string denoting which y variable to map x values to.
-        * xArgs: Expecting { xStr -> tuple() } mapping of { one/more of x listed above -> (StartVal, EndVal, #Points) }.
+        * xArgs: Expecting { xStr -> tuple() } mapping of { max of 3 x listed above -> (StartVal, EndVal) }.
         * numPts: Expecting integer denoting # of points to generate grid with. 100 by default. > 100 will result
         in significantly slower speeds.
         """
@@ -520,8 +520,8 @@ class BlackScholes(object):
             invalidArgs.append("numPts must be numeric.")
         if not isinstance(xArgs, dict):
             invalidArgs.append("xArgs must be a dictionary.")
-        elif len(xArgs.keys()) == 0:
-            invalidArgs.append("xArgs must have at least one key.")
+        elif len(xArgs.keys()) == 0 or len(xArgs.keys()) > 3:
+            invalidArgs.append("xArgs must have at least one key, max of 3.")
         else:
             # Ensure that tuples of correct dimension were provided for each argument:
             invalidMap = []
