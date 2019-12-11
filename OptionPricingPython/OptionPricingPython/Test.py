@@ -27,9 +27,7 @@ if __name__ == '__main__':
     args['type'] = 'call'
     
     bsModel = BlackScholes(args)
-    # Print all attributes of option:
-    bsModel.PrintAttributes()
-
+    
     # Plot relationships between option volatility and underlying implied volatility:
     # Start with strike = 50 (deep ITM):
     plotArgs = BlackScholes.XArgsPlotting()

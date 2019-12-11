@@ -270,12 +270,12 @@ class BlackScholes(object):
     ###################################
     # Interface Methods:
     ###################################    
-    def InstantaneousChg(self, mu):
+    def InstantaneousChg(self, mu = None):
         """
         * Compute instantaneous change in price of option, given risk free rate (mu).
         Inputs:
-        * mu: Expecting numeric value, or None. If not specified, then uses current
-        risk-free rate.
+        * mu: P measure risk premium (numeric or None). If None, then uses current
+        risk-free rate (Q measure mu).
         """
         if not mu:
             mu = self.RiskFree
@@ -284,7 +284,6 @@ class BlackScholes(object):
         r_orig = self.RiskFree
         sig = self.__sigma 
         s = self.__s_0
-        self.RiskFree = mu
         chg = .5 * (( sig * s )** 2) * self.Gamma + mu * s * self.Delta + self.Theta
         # Reset the risk-free rate to original value:
         self.RiskFree = r_orig
